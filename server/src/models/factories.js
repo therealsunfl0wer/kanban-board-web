@@ -28,3 +28,28 @@ export const UserFactory = {
     return safe;
   },
 };
+
+export const CardFactory = {
+  create({
+    column_id,
+    title,
+    description = "",
+    priority = "medium",
+    position = 0,
+  }) {
+    if (!title || title.trim().length === 0) {
+      throw new Error("Card title is required");
+    }
+    if (!["low", "medium", "high"].includes(priority)) {
+      throw new Error("Priority must be low, medium, or high");
+    }
+
+    return {
+      column_id,
+      title: title.trim(),
+      description: description.trim(),
+      priority,
+      position,
+    };
+  },
+};
