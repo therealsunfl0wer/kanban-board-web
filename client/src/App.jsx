@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import BoardPage from "./pages/BoardPage";
 import "./index.css";
 
 function PrivateRoute({ children }) {
@@ -13,18 +15,7 @@ function PrivateRoute({ children }) {
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="loading">Loading…</div>;
-  return user ? <Navigate to="/" replace /> : children;
-}
-
-function Home() {
-  return (
-    <div className="dashboard">
-      <div className="dashboard-main">
-        <h2 className="section-title">Welcome</h2>
-        <p className="empty-state">You are signed in.</p>
-      </div>
-    </div>
-  );
+  return user ? <Navigate to="/dashboard" replace /> : children;
 }
 
 export default function App() {
@@ -36,7 +27,23 @@ export default function App() {
             path="/"
             element={
               <PrivateRoute>
-                <Home />
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/board/:id"
+            element={
+              <PrivateRoute>
+                <BoardPage />
               </PrivateRoute>
             }
           />
