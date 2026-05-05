@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import BoardPage from "./pages/BoardPage";
+import AppLayout from "./components/AppLayout";
 import "./index.css";
 
 function PrivateRoute({ children }) {
@@ -27,26 +28,15 @@ export default function App() {
             path="/"
             element={
               <PrivateRoute>
-                <Dashboard />
+                <AppLayout />
               </PrivateRoute>
             }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/board/:id"
-            element={
-              <PrivateRoute>
-                <BoardPage />
-              </PrivateRoute>
-            }
-          />
+          >
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="board/:id" element={<BoardPage />} />
+          </Route>
+
           <Route
             path="/login"
             element={
