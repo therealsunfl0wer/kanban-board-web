@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>I'm a teapot</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        place-items: center;
+        min-height: 100vh;
+        font-family: monospace;
+        color: #333;
+      }
+      h1 {
+        margin: 32px 0 6px;
+        font-size: clamp(2rem, 4vw, 3rem);
+      }
+      p {
+        margin: 0 0 18px;
+        font-size: clamp(1rem, 2vw, 1.4rem);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>418 I'm a teapot</h1>
+    <p>Sorry, but I'm a teapot and cannot brew coffee.</p>
+    <hr />
+  </body>
+</html>
