@@ -1,8 +1,28 @@
-import { createHash } from "crypto";
+import { randomBytes, scryptSync, timingSafeEqual } from "crypto";
+
+const SALT_LENGTH = 16;
+const KEY_LENGTH = 64;
+const HASH_SEPARATOR = ":";
 
 export const UserFactory = {
   hashPassword(password) {
-    return createHash("sha256").update(password).digest("hex");
+    const salt = randomBytes(SALT_LENGTH).toString("hex");
+    const derivedKey = scryptSync(password, salt, KEY_LENGTH);
+    return `${salt}${HASH_SEPARATOR}${derivedKey.toString("hex")}`;
+  },
+
+  verifyPassword(password, storedHash) {
+    if (!storedHash) return false;
+
+    const [salt, keyHex] = storedHash.split(HASH_SEPARATOR);
+    if (!salt || !keyHex) return false;
+
+    const storedKey = Buffer.from(keyHex, "hex");
+    if (!storedKey.length) return false;
+
+    const derivedKey = scryptSync(password, salt, storedKey.length);
+    if (derivedKey.length !== storedKey.length) return false;
+    return timingSafeEqual(derivedKey, storedKey);
   },
 
   create({ username, email, password }) {

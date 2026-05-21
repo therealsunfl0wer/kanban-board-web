@@ -1,6 +1,14 @@
 import { UserFactory } from "../models/factories.js";
 
 export default async function authRoutes(fastify) {
+  const isProd = process.env.NODE_ENV === "production";
+  const cookieOptions = {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isProd,
+  };
+
   // POST /api/auth/register
   fastify.post("/register", async (request, reply) => {
     const { username, email, password } = request.body;
@@ -29,11 +37,7 @@ export default async function authRoutes(fastify) {
       const token = fastify.jwt.sign({ id: user.id, username: user.username });
 
       return reply
-        .setCookie("token", token, {
-          path: "/",
-          httpOnly: true,
-          sameSite: "lax",
-        })
+        .setCookie("token", token, cookieOptions)
         .code(201)
         .send({ user: UserFactory.toPublic(user) });
     } catch (err) {
@@ -54,29 +58,29 @@ export default async function authRoutes(fastify) {
       return reply.code(400).send({ error: "Email and password are required" });
     }
 
-    const hash = UserFactory.hashPassword(password);
     const user = fastify.db
-      .prepare("SELECT * FROM users WHERE email = ? AND password_hash = ?")
-      .get(email.toLowerCase(), hash);
+      .prepare("SELECT * FROM users WHERE email = ?")
+      .get(email.toLowerCase());
 
     if (!user) {
+      return reply.code(401).send({ error: "Invalid email or password" });
+    }
+
+    const valid = UserFactory.verifyPassword(password, user.password_hash);
+    if (!valid) {
       return reply.code(401).send({ error: "Invalid email or password" });
     }
 
     const token = fastify.jwt.sign({ id: user.id, username: user.username });
 
     return reply
-      .setCookie("token", token, {
-        path: "/",
-        httpOnly: true,
-        sameSite: "lax",
-      })
+      .setCookie("token", token, cookieOptions)
       .send({ user: UserFactory.toPublic(user) });
   });
 
   // POST /api/auth/logout
   fastify.post("/logout", async (request, reply) => {
-    return reply.clearCookie("token", { path: "/" }).send({ ok: true });
+    return reply.clearCookie("token", cookieOptions).send({ ok: true });
   });
 
   // GET /api/auth/me - check current session

@@ -5,8 +5,19 @@ import fCookie from "@fastify/cookie";
 async function jwtPlugin(fastify) {
   fastify.register(fCookie);
 
+  let secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("JWT_SECRET must be set in production");
+    }
+    secret = "dev-unsafe-secret";
+    fastify.log.warn(
+      "JWT_SECRET is not set. Using an insecure dev-only default.",
+    );
+  }
+
   fastify.register(fjwt, {
-    secret: process.env.JWT_SECRET || "lmao-no-prod-for-this",
+    secret,
     cookie: {
       cookieName: "token",
       signed: false,

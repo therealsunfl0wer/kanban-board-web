@@ -1,5 +1,6 @@
 // api facade
-const BASE = "/api";
+const RAW_BASE = import.meta.env?.VITE_API_BASE_URL ?? "/api";
+const BASE = RAW_BASE.endsWith("/") ? RAW_BASE.slice(0, -1) : RAW_BASE;
 
 async function request(path, options = {}) {
   const headers = { ...(options.headers || {}) };
