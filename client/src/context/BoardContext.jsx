@@ -119,6 +119,16 @@ export function BoardProvider({ children }) {
     dispatch({ type: "SET_BOARD", board });
   }, []);
 
+  const refreshBoard = useCallback(
+    async (boardId) => {
+      const targetId = boardId ?? board?.id;
+      if (!targetId) return;
+      const { board: refreshed } = await api.getBoard(targetId);
+      dispatch({ type: "SET_BOARD", board: refreshed });
+    },
+    [board?.id],
+  );
+
   const addCard = useCallback(
     async (columnId, title, description, priority) => {
       const { card } = await api.createCard({
@@ -142,8 +152,9 @@ export function BoardProvider({ children }) {
         position,
       });
       await api.moveCard(cardId, { column_id: toColumnId, position });
+      await refreshBoard();
     },
-    [],
+    [refreshBoard],
   );
 
   const deleteCard = useCallback(async (cardId) => {
@@ -166,10 +177,14 @@ export function BoardProvider({ children }) {
     await api.deleteColumn(columnId);
   }, []);
 
-  const moveColumn = useCallback(async (columnId, fromIndex, toIndex) => {
-    dispatch({ type: "MOVE_COLUMN", columnId, fromIndex, toIndex });
-    await api.moveColumn(columnId, { position: toIndex });
-  }, []);
+  const moveColumn = useCallback(
+    async (columnId, fromIndex, toIndex) => {
+      dispatch({ type: "MOVE_COLUMN", columnId, fromIndex, toIndex });
+      await api.moveColumn(columnId, { position: toIndex });
+      await refreshBoard();
+    },
+    [refreshBoard],
+  );
 
   return (
     <BoardContext.Provider

@@ -49,10 +49,14 @@ function BoardView() {
     getDragProps: getColumnDragProps,
     getDropProps: getColumnDropProps,
     getDropZoneProps: getColumnDropZoneProps,
+    dragState: columnDragState,
   } = useColumnDragAndDrop(moveColumn);
 
-  const { getDragProps: getCardDragProps, getDropProps: getCardDropProps } =
-    useDragAndDrop(moveCard);
+  const {
+    getDragProps: getCardDragProps,
+    getDropProps: getCardDropProps,
+    dragState: cardDragState,
+  } = useDragAndDrop(moveCard);
 
   const clearFocus = useCallback(() => {
     setFocusedColumnId(null);
@@ -299,6 +303,11 @@ function BoardView() {
 
   if (!board) return <div className="loading">Loading board…</div>;
 
+  const isColumnDropZoneActive =
+    Boolean(columnDragState?.draggingColumnId) &&
+    columnDragState?.overIndex === board.columns.length &&
+    columnDragState?.overColumnId == null;
+
   return (
     <div className="board-page">
       <header className="board-header">
@@ -376,11 +385,17 @@ function BoardView() {
               onFocusCard={handleFocusCard}
               dragHandleProps={getColumnDragProps(col.id, index)}
               dropProps={getColumnDropProps(col.id, index)}
+              cardDragProps={getCardDragProps}
+              cardDropProps={getCardDropProps}
+              cardDragState={cardDragState}
+              columnDragState={columnDragState}
             />
           ))}
 
           <div
-            className="column-drop-zone"
+            className={`column-drop-zone ${
+              isColumnDropZoneActive ? "is-over" : ""
+            }`}
             {...getColumnDropZoneProps(board.columns.length)}
             aria-hidden="true"
           />

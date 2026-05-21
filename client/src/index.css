@@ -407,6 +407,19 @@ body {
   box-shadow: inset 0 0 0 1px var(--accent);
 }
 
+.column.is-card-drop-target {
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--accent-dim);
+}
+
+.column.is-column-drop-target {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.column.is-column-dragging {
+  opacity: 0.6;
+}
+
 .column-header {
   align-items: center;
   display: flex;
@@ -476,8 +489,40 @@ body {
   padding-right: 4px;
 }
 
+.card-drop-slot {
+  position: relative;
+}
+
+.card-drop-slot--end {
+  min-height: 24px;
+  flex: 1;
+}
+
+.card-drop-slot.is-over::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: -4px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+.card-drop-slot--end.is-over::before {
+  top: auto;
+  bottom: 6px;
+}
+
 .column-drop-zone {
   flex: 0 0 24px;
+}
+
+.column-drop-zone.is-over {
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--accent);
+  border-radius: var(--radius);
 }
 
 .column.has-focused-card .card--dimmed {
@@ -507,6 +552,12 @@ body {
 
 .card--dimmed {
   opacity: 0.4;
+}
+
+.card--dragging {
+  opacity: 0.6;
+  border-color: var(--accent-dim);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 .card:active {
   cursor: grabbing;

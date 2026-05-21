@@ -9,7 +9,14 @@ const PRIORITY_COLORS = {
   high: "var(--priority-high)",
 };
 
-export function Card({ card, dragProps, isFocused, isDimmed, onFocus }) {
+export function Card({
+  card,
+  dragProps,
+  isFocused,
+  isDimmed,
+  isDragging,
+  onFocus,
+}) {
   const { deleteCard } = useBoard();
   const [hovered, setHovered] = useState(false);
 
@@ -21,7 +28,7 @@ export function Card({ card, dragProps, isFocused, isDimmed, onFocus }) {
     <div
       className={`card ${isFocused ? "card--focused" : ""} ${
         isDimmed ? "card--dimmed" : ""
-      }`}
+      } ${isDragging ? "card--dragging" : ""}`}
       {...dragProps}
       onClick={() => {
         if (!isFocused) onFocus?.();
